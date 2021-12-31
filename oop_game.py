@@ -1,5 +1,6 @@
 import pygame
 import os
+pygame.init()
 
 class player(object):
 	def __init__(self, x,y,width,height):
@@ -130,7 +131,7 @@ while run:
 			facing= +1
 
 		if len(bullets)<5:
- 			bullet.append(projectile(round(man.x+width//2),round(man.y+height//2),6,(black),facing)
+ 			bullet.append(projectile(round(man.x+width//2),round(man.y+height//2),6,(black),facing))
 
 	if not (man.isJump): 
 		if keys[pygame.K_UP]:
