@@ -158,4 +158,4 @@ while run:
 	draw_window()
 	man_movement(keys,man)
 
-pygame.QUIT
+pygame.quit()
