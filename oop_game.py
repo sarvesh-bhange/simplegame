@@ -16,6 +16,8 @@ class player(object):
 		self.right=False
 		self.walkCount=0
 		self.standing=True
+		self.hitbox=(self.x + 17, self.y + 4, 26, 57)
+
 		
 
 	def draw(self,win):
@@ -38,19 +40,75 @@ class player(object):
 		else:
 			win.blit(WalkLeft[0],(self.x,self.y))
 
+		self.hitbox=(self.x + 17, self.y + 4, 26, 57)
+		pygame.draw.rect(win,red,(self.hitbox),2)
+
 
 class projectile(object):
 	def __init__(self,x,y,radius,colour,facing):
 
 		self.x=x
-		self.x=y
-		self.x=radius
-		self.x=colour
-		self.x=facing
+		self.y=y
+		self.radius=radius
+		self.colour=colour
+		self.facing=facing
 		self.vel=8*facing
 
 	def draw(self,win):
 		pygame.draw.circle(win,self.colour,(self.x,self.y),self.radius)
+
+
+class enemy(object):
+	WalkLeft=[pygame.image.load(os.path.join('Game','L1E.png')),pygame.image.load(os.path.join('Game','L2E.png')),pygame.image.load(os.path.join('Game','L3E.png')),pygame.image.load(os.path.join('Game','L4E.png')),pygame.image.load(os.path.join('Game','L5E.png')),pygame.image.load(os.path.join('Game','L6E.png')),pygame.image.load(os.path.join('Game','L7E.png')),pygame.image.load(os.path.join('Game','L8E.png')),pygame.image.load(os.path.join('Game','L9E.png')),pygame.image.load(os.path.join('Game','L10E.png')),pygame.image.load(os.path.join('Game','L11E.png'))]
+
+	WalkRight=[pygame.image.load(os.path.join('Game','R1E.png')),pygame.image.load(os.path.join('Game','R2E.png')),pygame.image.load(os.path.join('Game','R3E.png')),pygame.image.load(os.path.join('Game','R4E.png')),pygame.image.load(os.path.join('Game','R5E.png')),pygame.image.load(os.path.join('Game','R6E.png')),pygame.image.load(os.path.join('Game','R7E.png')),pygame.image.load(os.path.join('Game','R8E.png')),pygame.image.load(os.path.join('Game','R9E.png')),pygame.image.load(os.path.join('Game','R10E.png')),pygame.image.load(os.path.join('Game','R11E.png'))]
+
+	def __init__(self,x,y,width,height,end):
+
+		self.x=x
+		self.vel=3
+		self.y=y
+		self.width=width
+		self.height=height
+		self.end=end
+		self.walkCount=0
+		self.path=[x,end]
+		self.hitbox=(self.x + 17, self.y + 1, 33, 57)
+
+
+	def draw(self,win):
+		self.move()
+
+		if self.walkCount + 1>=33:
+			self.walkCount=0
+
+		if self.vel>0:
+			win.blit(self.WalkRight[self.walkCount//3],(self.x,self.y))
+			self.walkCount+=1
+
+		else:
+			win.blit(self.WalkLeft[self.walkCount//3],(self.x,self.y))
+			self.walkCount+=1
+		self.hitbox=(self.x + 17, self.y + 1, 33, 57)
+		pygame.draw.rect(win,red,(self.hitbox),2)		
+
+	def move(self):
+		if self.vel>0:
+			if self.x + self.vel < self.path[1]:
+				self.x+=self.vel
+
+			else:
+				self.vel= self.vel * -1
+				self.x+self.vel
+				self.walkCount=0
+		else:
+			if self.x - self.vel > self.path[0]:
+				self.x+=self.vel
+				
+			else:
+				self.vel= self.vel * -1
+				self.x+self.vel
+				self.walkCount=0
 
 WIDTH,HEIGHT=500,480
 
@@ -62,6 +120,7 @@ Clock=pygame.time.Clock()
 FPS =27
 
 black=0,0,0
+red=255,0,0
 
 WalkRight=[pygame.image.load(os.path.join('Game','R1.png')),pygame.image.load(os.path.join('Game','R2.png')),pygame.image.load(os.path.join('Game','R3.png')),pygame.image.load(os.path.join('Game','R4.png')),pygame.image.load(os.path.join('Game','R5.png')),pygame.image.load(os.path.join('Game','R6.png')),pygame.image.load(os.path.join('Game','R7.png')),pygame.image.load(os.path.join('Game','R8.png')),pygame.image.load(os.path.join('Game','R9.png'))]
 
@@ -73,15 +132,14 @@ char=pygame.image.load(os.path.join('Game','standing.png'))
 
 bullets=[]
 
-run=True
-
 def draw_window():
 	win.blit(Background,(0,0))
 
 	man.draw(win)
 	for bullet in bullets:
-
 		bullet.draw(win)
+
+	goblin.draw(win)
 
 	pygame.display.update()
 
@@ -105,9 +163,18 @@ def man_movement(keys,man):
 		man.walkCount=0
 
 man=player(300,410,64,64)
+goblin=enemy(100, 415, 64, 64, 300)
 
+shootloop=0
+
+run=True
 while run:
 	Clock.tick(FPS)
+
+	if shootloop > 0:
+		shootloop +=1
+	if shootloop > 3:
+		shootloop=0
 
 
 	for event in pygame.event.get():
@@ -115,23 +182,29 @@ while run:
 			run=False
 
 	for bullet in bullets:
-		if bullet.x >500 and bullet.x >0:
+		if bullet.x-bullet.radius < goblin.hitbox[0]+goblin.hitbox[2] and bullet.x+bullet.radius:
+			if bullet.y-bullet.radius<goblin.hitbox[1]+goblin.hitbox[3]:
+				bullets.pop(bullets.index(bullet))
+
+		if bullet.x < WIDTH and bullet.x >0:
 			bullet.x += bullet.vel
 		
 		else:
-			bullet.pop(bullet.index(bullet))
+			bullets.pop(bullets.index(bullet))
 
 
 	keys=pygame.key.get_pressed()
 
-	if keys[pygame.K_SPACE]:
+	if keys[pygame.K_SPACE] and shootloop==0:
 		if man.left:
 			facing= -1
 		else:
-			facing= +1
+			facing= 1
 
-		if len(bullets)<5:
- 			bullet.append(projectile(round(man.x+width//2),round(man.y+height//2),6,(black),facing))
+		if len(bullets)<3:
+ 			bullets.append(projectile(round(man.x+man.width//2),round(man.y+man.height//2),6,(black),facing))
+
+ 			shootloop=1
 
 	if not (man.isJump): 
 		if keys[pygame.K_UP]:
