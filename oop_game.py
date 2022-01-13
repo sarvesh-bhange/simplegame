@@ -1,24 +1,22 @@
 import pygame
 import os
+
+from hitbox import hitbox
+from player import player
+from projectile import projectile
+from enemy import enemy
+from constant import *
+
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
-WIDTH,HEIGHT=500,480
 
 pygame.display.set_caption('Simple Game')
 
 win=pygame.display.set_mode((WIDTH,HEIGHT))
 Clock=pygame.time.Clock()
 
-FPS =27
-
-black=0,0,0
-red=255,0,0
-
-WalkRight=[pygame.image.load(os.path.join('Game','R1.png')),pygame.image.load(os.path.join('Game','R2.png')),pygame.image.load(os.path.join('Game','R3.png')),pygame.image.load(os.path.join('Game','R4.png')),pygame.image.load(os.path.join('Game','R5.png')),pygame.image.load(os.path.join('Game','R6.png')),pygame.image.load(os.path.join('Game','R7.png')),pygame.image.load(os.path.join('Game','R8.png')),pygame.image.load(os.path.join('Game','R9.png'))]
-
-WalkLeft=[pygame.image.load(os.path.join('Game','L1.png')),pygame.image.load(os.path.join('Game','L2.png')),pygame.image.load(os.path.join('Game','L3.png')),pygame.image.load(os.path.join('Game','L4.png')),pygame.image.load(os.path.join('Game','L5.png')),pygame.image.load(os.path.join('Game','L6.png')),pygame.image.load(os.path.join('Game','L7.png')),pygame.image.load(os.path.join('Game','L8.png')),pygame.image.load(os.path.join('Game','L9.png'))]
 
 Background=pygame.image.load(os.path.join('Game','bg.jpg'))
 
@@ -33,166 +31,6 @@ bullet_sound=pygame.mixer.Sound(os.path.join('Game','bullet.mp3'))
 Background_sound=pygame.mixer.music.load(os.path.join('Game','music.mp3'))
 pygame.mixer.music.play(-1)
 
-class hitbox(object):
-	def __init__(self,x,y,width,height):
-		self.x = x
-		self.y = y
-		self.height = height
-		self.width = width
-
-	def get_rect(self):
-		return (self.x,self.y,self.width,self.height)
-
-	def update(self,x,y,width,height):
-		self.x = x
-		self.y = y
-		self.height = height
-		self.width = width
-
-class player(object):
-	def __init__(self, x,y,width,height):
-		
-		self.x = x
-		self.y= y
-		self.vel=5
-		self.width= width
-		self.height= height
-		self.isJump=False
-		self.JumpCount=10
-		self.left=False
-		self.right=False
-		self.walkCount=0
-		self.standing=True
-		self.hitbox= hitbox(self.x + 17,self.y + 4,26,57 )
-
-		
-
-	def draw(self,win):
-
-		if self.walkCount +1 >= 27:
-
-			self.walkCount=0
-		if not(self.standing):
-			if self.left:
-				win.blit(WalkLeft[self.walkCount//3],(self.x,self.y))
-				self.walkCount+=1
-
-			elif self.right:
-				win.blit(WalkRight[self.walkCount//3],(self.x,self.y))
-				self.walkCount+=1
-		
-		elif self.right:
-			win.blit(WalkRight[0],(self.x,self.y))
-
-		else:
-			win.blit(WalkLeft[0],(self.x,self.y))
-
-		self.hitbox.update(self.x + 17, self.y + 4, 26, 57);
-		pygame.draw.rect(win,red,(self.hitbox.get_rect()),2)
-
-	# def Hit():
-	# 	self.x=60
-	# 	self.y=410
-	# 	self.walkCount=0
-
-	# 	winner_text=pygame.font.SysFont('comicsans',100,True)
-	# 	text1=font.render('-5')
-	# 	win.blit(win,text1,(250-(pygame.width_get()/2),200))
-	# 	pygame.display.update()
-
-	# 	i=0
-	# 	while i<300:
-	# 		i+=1
-	# 		for event in pygame.event.get:
-	# 			if event.type==pygame.QUIT:
-	# 				i=301
-	# 				pygame.quit()
-
-class projectile(object):
-	def __init__(self,x,y,radius,colour,facing):
-
-		self.x=x
-		self.y=y
-		self.radius=radius
-		self.colour=colour
-		self.facing=facing
-		self.vel=8*facing
-
-	def draw(self,win):
-		pygame.draw.circle(win,self.colour,(self.x,self.y),self.radius)
-
-
-class enemy(object):
-	WalkLeft=[pygame.image.load(os.path.join('Game','L1E.png')),pygame.image.load(os.path.join('Game','L2E.png')),pygame.image.load(os.path.join('Game','L3E.png')),pygame.image.load(os.path.join('Game','L4E.png')),pygame.image.load(os.path.join('Game','L5E.png')),pygame.image.load(os.path.join('Game','L6E.png')),pygame.image.load(os.path.join('Game','L7E.png')),pygame.image.load(os.path.join('Game','L8E.png')),pygame.image.load(os.path.join('Game','L9E.png')),pygame.image.load(os.path.join('Game','L10E.png')),pygame.image.load(os.path.join('Game','L11E.png'))]
-
-	WalkRight=[pygame.image.load(os.path.join('Game','R1E.png')),pygame.image.load(os.path.join('Game','R2E.png')),pygame.image.load(os.path.join('Game','R3E.png')),pygame.image.load(os.path.join('Game','R4E.png')),pygame.image.load(os.path.join('Game','R5E.png')),pygame.image.load(os.path.join('Game','R6E.png')),pygame.image.load(os.path.join('Game','R7E.png')),pygame.image.load(os.path.join('Game','R8E.png')),pygame.image.load(os.path.join('Game','R9E.png')),pygame.image.load(os.path.join('Game','R10E.png')),pygame.image.load(os.path.join('Game','R11E.png'))]
-
-	def __init__(self,x,y,width,height,end):
-
-		self.x=x
-		self.vel=3
-		self.y=y
-		self.width=width
-		self.height=height
-		self.end=end
-		self.walkCount=0
-		self.path=[x,end]
-		self.hitbox= hitbox(self.x + 17, self.y + 1, 33, 57)
-		self.health=10
-		self.visiable=True
-
-
-	def draw(self,win):
-		self.move()
-
-		if self.visiable:
-
-			if self.walkCount + 1>=33:
-				self.walkCount=0
-
-			if self.vel>0:
-				win.blit(self.WalkRight[self.walkCount//3],(self.x,self.y))
-				self.walkCount+=1
-
-			else:
-				win.blit(self.WalkLeft[self.walkCount//3],(self.x,self.y))
-				self.walkCount+=1
-
-			self.hitbox.update(self.x + 17, self.y + 2, 31, 57)
-
-			# health bar background 
-			
-			pygame.draw.rect(win, (black), (self.hitbox.x, self.hitbox.y-20, 50, 10))
-			
-			#  shrinking health bar
-			pygame.draw.rect(win,(red),(self.hitbox.x,self.hitbox.y-20,50-(5*(10-self.health)),10))
-			
-			pygame.draw.rect(win,red,(self.hitbox.get_rect()),2)	
-
-
-	def move(self):
-		if self.vel>0:
-			if self.x + self.vel < self.path[1]:
-				self.x+=self.vel
-
-			else:
-				self.vel= self.vel * -1
-				self.x+self.vel
-				self.walkCount=0
-		else:
-			if self.x - self.vel > self.path[0]:
-				self.x+=self.vel
-				
-			else:
-				self.vel= self.vel * -1
-				self.x+self.vel
-				self.walkCount=0
-
-	def hit(self):
-		if self.health>0:
-			self.health-=1
-		else:
-			self.visiable=False
 
 def draw_window():
 	win.blit(Background,(0,0))

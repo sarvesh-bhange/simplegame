@@ -1,0 +1,7 @@
+black=0,0,0
+
+red=255,0,0
+
+FPS =27
+
+WIDTH,HEIGHT=500,480
