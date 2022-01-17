@@ -20,7 +20,7 @@ Clock=pygame.time.Clock()
 
 Background=pygame.image.load(os.path.join('Game','bg.jpg'))
 
-char=pygame.image.load(os.path.join('Game','standing.png'))
+
 
 bullets=[]
 
@@ -89,31 +89,28 @@ while run:
 	for event in pygame.event.get():
 		if event.type==pygame.QUIT:
 			run=False
+	if goblin.visiable:
+		if(man.hitbox.x > goblin.hitbox.x and man.hitbox.x < goblin.hitbox.x + goblin.hitbox.width):
+			if (man.hitbox.y > goblin.hitbox.y and man.hitbox.y < goblin.hitbox.y + goblin.hitbox.height):
+				man.hit(win)
 
+				score-=5
 
-
-	# if(man.hitbox[1] < goblin.hitbox[1]+goblin.hitbox[3] and man.hitbox[1]+man.hitbox[3] >  goblin.hitbox[1]):
-	# 	if (man.hitbox[0]+goblin.hitbox[1] > goblin.hitbox[0]+goblin.hitbox[2] and man.hitbox[1]+man.hitbox[3]>goblin.hitbox[2]):
-	# 		man.hit()
-
-	# 		score-=5
-
-	# 		bullets.pop(bullets.index(bullet))	
 
 	for bullet in bullets:
 
 		# Collision of projectile with goblin
 		bullet_center_x = bullet.x + bullet.radius
 		bullet_center_y = bullet.y + bullet.radius
+		if goblin.visiable:
+			if(bullet_center_x > goblin.hitbox.x and bullet_center_x < goblin.hitbox.x + goblin.hitbox.width):
+				if (bullet_center_y > goblin.hitbox.y and bullet_center_y < goblin.hitbox.y + goblin.hitbox.height):
+					hit_sound.play()
+					goblin.hit()
 
-		if(bullet_center_x > goblin.hitbox.x and bullet_center_x < goblin.hitbox.x + goblin.hitbox.width):
-			if (bullet_center_y > goblin.hitbox.y and bullet_center_y < goblin.hitbox.y + goblin.hitbox.height):
-				hit_sound.play()
-				goblin.hit()
+					score+=1
 
-				score+=1
-
-				bullets.pop(bullets.index(bullet))
+					bullets.pop(bullets.index(bullet))
 
 		# Collision of projectile with wall
 		if bullet.x < WIDTH and bullet.x >0:

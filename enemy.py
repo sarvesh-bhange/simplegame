@@ -21,6 +21,7 @@ class enemy(object):
 		self.hitbox= hitbox(self.x + 17, self.y + 1, 33, 57)
 		self.health=10
 		self.visiable=True
+		self.showHitbox=False
 
 
 	def draw(self,win):
@@ -48,7 +49,8 @@ class enemy(object):
 			#  shrinking health bar
 			pygame.draw.rect(win,(red),(self.hitbox.x,self.hitbox.y-20,50-(5*(10-self.health)),10))
 			
-			pygame.draw.rect(win,red,(self.hitbox.get_rect()),2)	
+			if self.showHitbox:
+				pygame.draw.rect(win,red,(self.hitbox.get_rect()),2)	
 
 
 	def move(self):
